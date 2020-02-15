@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "id": 123,
+      "reference": "Xbox",
+      "description": "playing console",
+      "currency": "COP",
+      "vr_unit": 560000,
+      "discount": 0
+    },
+    {
+      "id": 5114,
+      "reference": "Mass Effect",
+      "description": "Video Game",
+      "currency": "",
+      "vr_unit": "60000",
+      "discount": 0
+    },
+    {
+      "id": 4541,
+      "reference": "The Witcher 3",
+      "description": "Video Game",
+      "currency": "",
+      "vr_unit": "11500",
+      "discount": 0
+    },
+    {
+      "id": 3683,
+      "reference": "Sekiro",
+      "description": "Video game",
+      "currency": "",
+      "vr_unit": "144000",
+      "discount": 0
+    }
+  ]
+}
