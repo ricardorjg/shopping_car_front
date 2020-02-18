@@ -2,13 +2,10 @@ import React, { useState, useEffect } from 'react'
 
 import ItemService from './services/ItemService'
 import Item from './components/Item'
-
-
-const getRandomInt = (max => () => Math.floor(Math.random() * Math.floor(max)))(10000)  
+import Notification from './components/Notification'
 
 const genBlankItem = () => {
 	return {
-		id: getRandomInt(),
 		reference: "",
 		description: "",
 		currency: "",
@@ -17,22 +14,24 @@ const genBlankItem = () => {
 	}
 }
 
-const removeFact = prop => obj => Object.keys(obj).filter(k => k !== prop).reduce((newObj, key) => {
-	newObj[key] = obj[key]
-	return newObj
-}, {})
-
-const removeId = removeFact('id')
-
-const cleanObj = obj => Object.keys(obj).filter(k => !!obj[k]).reduce((newObj, key) => {
-	newObj[key] = obj[key]
-	return newObj
-}, {})
+const removeFalsyProps = obj => {
+	return Object
+			.keys(obj)
+			.filter(k => !!obj[k])
+			.reduce((newObj, k) => {
+				newObj[k] = obj[k]
+				return newObj
+			}, {})
+}
 
 const App = () => {
 
 	const [item, modifyItem] = useState(genBlankItem())
 	const [items, setItems] = useState([])
+	const [notification, setNotification] = useState({
+		msg: '',
+		classStyle: ''
+	})
 
 	const handleChange = e => {
 		modifyItem({...item, [e.target.name]: e.target.value})
@@ -45,14 +44,38 @@ const App = () => {
 
 		if (updateItem) {
 			ItemService
-				.updateItem(cleanObj(removeId(item)), updateItem.id)
+				.updateItem(removeFalsyProps(item), updateItem.id)
 				.then(item => setItems([...items.map(i => i.id === item.id ? item : i)]))
+				.then(() => { 
+					setNotification({
+						msg: 'Item added', 
+						classStyle: 'success'
+					})
+
+					setTimeout(() => {
+						setNotification({msg: '', classStyle: ''})
+					}, 5000)
+				})
+				.catch(err => setNotification({
+					msg: 'Error updating item',
+					classStyle: 'error'
+				}))
+				.finally(() => modifyItem(genBlankItem()))
 		} else {
 			ItemService
 				.addItem(item)
-				.then(item => setItems(items.concat(item))
-			)
-			modifyItem(genBlankItem())
+				.then(item => setItems(items.concat(item)))
+				.then(() => { 
+					setNotification({
+						msg: 'Item added', 
+						classStyle: 'success'
+					})
+
+					setTimeout(() => {
+						setNotification({msg: '', classStyle: ''})
+					}, 5000)
+				})
+				.finally(() => modifyItem(genBlankItem()))
 		}
 	}
 
@@ -63,7 +86,8 @@ const App = () => {
 	}, [])
 
   	return (
-		<React.Fragment>		
+		<React.Fragment>
+			<Notification msg={notification.msg} classStyle={notification.classStyle} />
 			<form onSubmit={handleOnSubmit}>
 				<div>
 					<label>Reference</label>
